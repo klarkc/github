@@ -246,7 +246,7 @@
      * @param {string} [apiBase=https://api.github.com] - the base Github API URL
      */
     function GitHub(auth) {
-      var apiBase = arguments.length <= 1 || arguments[1] === undefined ? 'https://api.github.com' : arguments[1];
+      var apiBase = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'https://api.github.com';
 
       _classCallCheck(this, GitHub);
 
@@ -903,7 +903,7 @@
    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
       return typeof obj;
    } : function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
    };
 
    function _classCallCheck(instance, Constructor) {
@@ -1243,7 +1243,7 @@
       }, {
          key: 'updatePullRequst',
          value: function updatePullRequst(number, options, cb) {
-            log('Deprecated: This method contains a typo and it has been deprecated. It will be removed in next major version. Use updatePullRequest() instead.');
+            log('Deprecated: This method contains a typo and it has been deprecated.' + 'It will be removed in next major version. Use updatePullRequest() instead.');
 
             return this.updatePullRequest(number, options, cb);
          }
@@ -1498,7 +1498,9 @@
       }, {
          key: 'moveProjectCard',
          value: function moveProjectCard(cardId, position, colId, cb) {
-            return this._request('POST', '/repos/' + this.__fullname + '/projects/columns/cards/' + cardId + '/moves', { position: position, column_id: colId }, cb);
+            /* eslint-disable quote-props*/
+            return this._request('POST', '/repos/' + this.__fullname + '/projects/columns/cards/' + cardId + '/moves', { 'position': position, 'column_id': colId }, cb);
+            /* eslint-enable */
          }
       }]);
 
@@ -1539,7 +1541,7 @@
    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
       return typeof obj;
    } : function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
    };
 
    var _createClass = function () {
@@ -1699,7 +1701,7 @@
       }, {
          key: '_getOptionsWithDefaults',
          value: function _getOptionsWithDefaults() {
-            var requestOptions = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var requestOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
             if (!(requestOptions.visibility || requestOptions.affiliation)) {
                requestOptions.type = requestOptions.type || 'all';
@@ -1756,9 +1758,11 @@
                   if (response.data && Object.keys(response.data).length > 0) {
                      // When data has results
                      cb(null, response.data, response);
-                  } else {
-                     // True when success
+                  } else if (config.method !== 'GET' && Object.keys(response.data).length < 1) {
+                     // True when successful submit a request and receive a empty object
                      cb(null, response.status < 300, response);
+                  } else {
+                     cb(null, response.data, response);
                   }
                });
             }
@@ -1768,7 +1772,7 @@
       }, {
          key: '_request204or404',
          value: function _request204or404(path, data, cb) {
-            var method = arguments.length <= 3 || arguments[3] === undefined ? 'GET' : arguments[3];
+            var method = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'GET';
 
             return this._request(method, path, data).then(function success(response) {
                if (cb) {
@@ -1838,7 +1842,7 @@
    }
 
    function getNextPage() {
-      var linksHeader = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+      var linksHeader = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
       var links = linksHeader.split(/\s*,\s*/); // splits and strips the urls
       return links.reduce(function (nextUrl, link) {
@@ -1999,8 +2003,8 @@
       value: function _search(path) {
         var _this2 = this;
 
-        var withOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var cb = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+        var withOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
 
         var requestOptions = {};
         Object.keys(this.__defaults).forEach(function (prop) {
